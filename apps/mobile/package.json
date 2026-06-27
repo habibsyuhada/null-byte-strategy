@@ -1,0 +1,17 @@
+{
+  "name": "@null-byte-strategy/mobile",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc -b",
+    "clean": "rm -rf dist *.tsbuildinfo",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@null-byte-strategy/game-core": "workspace:*",
+    "@null-byte-strategy/schemas": "workspace:*",
+    "@null-byte-strategy/utils": "workspace:*"
+  }
+}
