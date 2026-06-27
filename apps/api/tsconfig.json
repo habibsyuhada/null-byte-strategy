@@ -6,8 +6,5 @@
   },
   "include": ["src/**/*.ts"],
   "exclude": ["src/**/*.test.ts", "dist"],
-  "references": [
-    { "path": "../../packages/schemas" },
-    { "path": "../../packages/utils" }
-  ]
+  "references": [{ "path": "../../packages/schemas" }, { "path": "../../packages/utils" }]
 }

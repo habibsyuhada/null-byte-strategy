@@ -30,6 +30,37 @@ importers:
         specifier: ^3.0.0
         version: 3.2.6
 
+  apps/api:
+    dependencies:
+      '@null-byte-strategy/schemas':
+        specifier: workspace:*
+        version: link:../../packages/schemas
+      '@null-byte-strategy/utils':
+        specifier: workspace:*
+        version: link:../../packages/utils
+
+  apps/mobile:
+    dependencies:
+      '@null-byte-strategy/game-core':
+        specifier: workspace:*
+        version: link:../../packages/game-core
+      '@null-byte-strategy/schemas':
+        specifier: workspace:*
+        version: link:../../packages/schemas
+      '@null-byte-strategy/utils':
+        specifier: workspace:*
+        version: link:../../packages/utils
+
+  packages/game-core: {}
+
+  packages/schemas:
+    dependencies:
+      zod:
+        specifier: ^3.24.0
+        version: 3.25.76
+
+  packages/utils: {}
+
 packages:
 
   '@esbuild/aix-ppc64@0.27.7':
@@ -995,6 +1026,9 @@ packages:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
 
+  zod@3.25.76:
+    resolution: {integrity: sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ==}
+
 snapshots:
 
   '@esbuild/aix-ppc64@0.27.7':
@@ -1863,3 +1897,5 @@ snapshots:
   word-wrap@1.2.5: {}
 
   yocto-queue@0.1.0: {}
+
+  zod@3.25.76: {}

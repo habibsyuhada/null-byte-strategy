@@ -22,6 +22,7 @@
 ## Task 1: Root Configuration
 
 **Files:**
+
 - Create: `package.json`
 - Create: `pnpm-workspace.yaml`
 - Create: `.gitignore`
@@ -29,6 +30,7 @@
 - Create: `.prettierrc`
 
 **Interfaces:**
+
 - Produces: Root `package.json` with shared devDeps, workspace config, `.gitignore` with standard patterns, base TypeScript config, Prettier config
 
 - [ ] **Step 1: Create `package.json`**
@@ -64,8 +66,8 @@
 
 ```yaml
 packages:
-  - "apps/*"
-  - "packages/*"
+  - 'apps/*'
+  - 'packages/*'
 ```
 
 - [ ] **Step 3: Create `.gitignore`**
@@ -169,9 +171,11 @@ git commit -m "chore: root monorepo configuration (pnpm, TypeScript, Prettier)"
 ## Task 2: ESLint Configuration
 
 **Files:**
+
 - Create: `.eslintrc.cjs`
 
 **Interfaces:**
+
 - Produces: Shared ESLint config for all TypeScript packages
 
 - [ ] **Step 1: Create `.eslintrc.cjs`**
@@ -185,10 +189,7 @@ module.exports = {
     sourceType: 'module',
   },
   plugins: ['@typescript-eslint'],
-  extends: [
-    'eslint:recommended',
-    'plugin:@typescript-eslint/recommended',
-  ],
+  extends: ['eslint:recommended', 'plugin:@typescript-eslint/recommended'],
   rules: {
     '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
     '@typescript-eslint/no-explicit-any': 'warn',
@@ -225,6 +226,7 @@ git commit -m "chore: add ESLint configuration"
 ## Task 3: Shared Utils Package
 
 **Files:**
+
 - Create: `packages/utils/package.json`
 - Create: `packages/utils/tsconfig.json`
 - Create: `packages/utils/src/index.ts`
@@ -233,6 +235,7 @@ git commit -m "chore: add ESLint configuration"
 - Create: `packages/utils/vitest.config.ts`
 
 **Interfaces:**
+
 - Consumes: `tsconfig.base.json` (extends)
 - Produces:
   - `deepClone<T>(value: T): T` — safe deep clone using structuredClone
@@ -323,7 +326,10 @@ describe('deepClone', () => {
     expect(clonedSet).toEqual(originalSet);
     expect(clonedSet).not.toBe(originalSet);
 
-    const originalMap = new Map([['a', 1], ['b', 2]]);
+    const originalMap = new Map([
+      ['a', 1],
+      ['b', 2],
+    ]);
     const clonedMap = deepClone(originalMap);
     expect(clonedMap).toEqual(originalMap);
     expect(clonedMap).not.toBe(originalMap);
@@ -371,6 +377,7 @@ git commit -m "feat(utils): add shared utils package with deepClone"
 ## Task 4: Shared Schemas Package
 
 **Files:**
+
 - Create: `packages/schemas/package.json`
 - Create: `packages/schemas/tsconfig.json`
 - Create: `packages/schemas/vitest.config.ts`
@@ -379,6 +386,7 @@ git commit -m "feat(utils): add shared utils package with deepClone"
 - Create: `packages/schemas/src/common.test.ts`
 
 **Interfaces:**
+
 - Consumes: `tsconfig.base.json` (extends)
 - Produces:
   - `SchemaVersion` — `z.object({ schemaVersion: z.number() })`
@@ -513,6 +521,7 @@ git commit -m "feat(schemas): add shared schemas package with SchemaVersioned ba
 ## Task 5: Game Core Package
 
 **Files:**
+
 - Create: `packages/game-core/package.json`
 - Create: `packages/game-core/tsconfig.json`
 - Create: `packages/game-core/vitest.config.ts`
@@ -521,6 +530,7 @@ git commit -m "feat(schemas): add shared schemas package with SchemaVersioned ba
 - Create: `packages/game-core/src/utils/seeded-rng.test.ts`
 
 **Interfaces:**
+
 - Consumes: `tsconfig.base.json` (extends)
 - Produces:
   - `SeededRNG` class with `next()`, `nextInt(min, max)`, `nextFloat(min, max)`, `shuffle<T>(array)`
@@ -711,6 +721,7 @@ git commit -m "feat(game-core): add game core package with deterministic SeededR
 ## Task 6: Mobile App Stub
 
 **Files:**
+
 - Create: `apps/mobile/package.json`
 - Create: `apps/mobile/tsconfig.json`
 - Create: `apps/mobile/vitest.config.ts`
@@ -718,6 +729,7 @@ git commit -m "feat(game-core): add game core package with deterministic SeededR
 - Create: `apps/mobile/src/index.test.ts`
 
 **Interfaces:**
+
 - Consumes: `tsconfig.base.json` (extends), `@null-byte-strategy/game-core`, `@null-byte-strategy/schemas`, `@null-byte-strategy/utils`
 - Produces: App entry point stub
 
@@ -831,6 +843,7 @@ git commit -m "feat(mobile): add mobile app stub with workspace dependencies"
 ## Task 7: API Stub
 
 **Files:**
+
 - Create: `apps/api/package.json`
 - Create: `apps/api/tsconfig.json`
 - Create: `apps/api/vitest.config.ts`
@@ -839,6 +852,7 @@ git commit -m "feat(mobile): add mobile app stub with workspace dependencies"
 - Create: `apps/api/Dockerfile`
 
 **Interfaces:**
+
 - Consumes: `tsconfig.base.json` (extends), `@null-byte-strategy/schemas`, `@null-byte-strategy/utils`
 - Produces: API entry point stub, Dockerfile
 
@@ -874,10 +888,7 @@ git commit -m "feat(mobile): add mobile app stub with workspace dependencies"
   },
   "include": ["src/**/*.ts"],
   "exclude": ["src/**/*.test.ts", "dist"],
-  "references": [
-    { "path": "../../packages/schemas" },
-    { "path": "../../packages/utils" }
-  ]
+  "references": [{ "path": "../../packages/schemas" }, { "path": "../../packages/utils" }]
 }
 ```
 
@@ -983,9 +994,11 @@ git commit -m "feat(api): add API stub with health endpoint and Dockerfile"
 ## Task 8: GitHub Actions CI
 
 **Files:**
+
 - Create: `.github/workflows/ci.yml`
 
 **Interfaces:**
+
 - Consumes: All packages' `test` and `build` scripts
 - Produces: CI pipeline that runs on PR and push to main
 
@@ -1045,9 +1058,11 @@ git commit -m "ci: add GitHub Actions workflow for lint, typecheck, test, build"
 ## Task 9: Root Integration Verification
 
 **Files:**
+
 - Modify: `tsconfig.base.json` (add references if missing)
 
 **Interfaces:**
+
 - Consumes: All packages' tsconfig.json files
 - Produces: Working `pnpm typecheck` and `pnpm test` from root
 
@@ -1096,6 +1111,7 @@ Expected: All packages compile without errors
 
 Run: `pnpm test`
 Expected: All test suites pass:
+
 - `packages/utils` — 4 tests
 - `packages/schemas` — 3 tests
 - `packages/game-core` — 6 tests

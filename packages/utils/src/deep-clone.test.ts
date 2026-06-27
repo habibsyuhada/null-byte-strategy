@@ -29,7 +29,10 @@ describe('deepClone', () => {
     expect(clonedSet).toEqual(originalSet);
     expect(clonedSet).not.toBe(originalSet);
 
-    const originalMap = new Map([['a', 1], ['b', 2]]);
+    const originalMap = new Map([
+      ['a', 1],
+      ['b', 2],
+    ]);
     const clonedMap = deepClone(originalMap);
     expect(clonedMap).toEqual(originalMap);
     expect(clonedMap).not.toBe(originalMap);

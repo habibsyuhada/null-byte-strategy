@@ -147,6 +147,7 @@ packages/game-core/src/
 ### Entity Types
 
 #### Node
+
 ```typescript
 interface Node {
   id: string;
@@ -161,11 +162,12 @@ interface Node {
 ```
 
 #### Link
+
 ```typescript
 interface Link {
   id: string;
   from: string; // node id
-  to: string;   // node id
+  to: string; // node id
   traversalRules: TraversalRule[];
   cost: number;
   hidden: boolean;
@@ -174,6 +176,7 @@ interface Link {
 ```
 
 #### AccessRule
+
 ```typescript
 interface AccessRule {
   type: 'evidence_required' | 'trace_threshold' | 'item_required' | 'always' | 'never';
@@ -183,6 +186,7 @@ interface AccessRule {
 ```
 
 #### Evidence
+
 ```typescript
 interface Evidence {
   id: string;
@@ -196,6 +200,7 @@ interface Evidence {
 ```
 
 #### Trap
+
 ```typescript
 interface Trap {
   id: string;
@@ -210,6 +215,7 @@ interface Trap {
 ```
 
 #### TrapEffect
+
 ```typescript
 interface TrapEffect {
   type: 'trace_increase' | 'damage' | 'teleport' | 'lock_node' | 'alert' | 'evidence_destroy';
@@ -219,6 +225,7 @@ interface TrapEffect {
 ```
 
 #### Objective
+
 ```typescript
 interface Objective {
   id: string;
@@ -233,6 +240,7 @@ interface Objective {
 ### State Model
 
 #### RunState
+
 ```typescript
 interface RunState {
   runId: string;
@@ -257,9 +265,10 @@ interface RunState {
 ```
 
 #### TraceState
+
 ```typescript
 interface TraceState {
-  level: number;        // 0-100
+  level: number; // 0-100
   tier: 'undetected' | 'suspicious' | 'alert' | 'compromised' | 'critical';
   decayRate: number;
   thresholds: { suspicious: number; alert: number; compromised: number; critical: number };
@@ -267,6 +276,7 @@ interface TraceState {
 ```
 
 #### SessionFlags
+
 ```typescript
 interface SessionFlags {
   stealthMode: boolean;
@@ -278,15 +288,16 @@ interface SessionFlags {
 ```
 
 #### ScoreBreakdown
+
 ```typescript
 interface ScoreBreakdown {
   base: number;
   objectives: number;
   evidence: number;
-  trace: number;      // penalty for high trace
-  time: number;       // bonus for speed
-  traps: number;      // penalty for triggered traps
-  bonus: number;      // stealth bonus, perfect run bonus
+  trace: number; // penalty for high trace
+  time: number; // bonus for speed
+  traps: number; // penalty for triggered traps
+  bonus: number; // stealth bonus, perfect run bonus
   total: number;
 }
 ```
@@ -294,20 +305,24 @@ interface ScoreBreakdown {
 ### Rules Engine
 
 #### AccessEvaluator
+
 - `evaluateAccess(node, runState): AccessResult`
 - Checks all access rules against current state
 - Returns: `{ allowed: boolean; reason: string; missingRequirements: string[] }`
 
 #### TriggerResolver
+
 - `evaluateTriggers(node, runState): TrapTriggerResult`
 - Checks trap trigger conditions
 - Returns: `{ triggered: boolean; trap: Trap; autoDisarmed: boolean }`
 
 #### RewardCalculator
+
 - `calculateRewards(runState, stageDefinition): Reward[]`
 - Computes rewards based on objectives completed, evidence collected, score
 
 #### FailConditionChecker
+
 - `checkFailConditions(runState, stageDefinition): FailResult`
 - Checks: all objectives failed, trace critical too long, no valid moves remaining
 
@@ -325,6 +340,7 @@ Each system is a pure function: `(runState, context) → { newState, events[] }`
 ### Orchestrators
 
 #### ActionExecutor
+
 ```typescript
 type ActionType = 'move' | 'collect_evidence' | 'use_item' | 'scan' | 'disarm_trap' | 'wait';
 
@@ -334,25 +350,30 @@ interface ActionIntent {
   payload: Record<string, unknown> | null;
 }
 
-function executeAction(runState: RunState, action: ActionIntent): {
+function executeAction(
+  runState: RunState,
+  action: ActionIntent,
+): {
   newState: RunState;
   events: GameplayEvent[];
   feedback: UIFeedbackHint[];
-}
+};
 ```
 
 #### RunInitializer
+
 ```typescript
-function createRunState(stageContent: StageDefinition, seed: number): RunState
+function createRunState(stageContent: StageDefinition, seed: number): RunState;
 ```
 
 ### Utilities
 
 #### SeededRNG
+
 ```typescript
 class SeededRNG {
   constructor(seed: number);
-  next(): number;           // 0-1 float
+  next(): number; // 0-1 float
   nextInt(min: number, max: number): number;
   nextFloat(min: number, max: number): number;
   shuffle<T>(array: T[]): T[];
@@ -360,19 +381,23 @@ class SeededRNG {
 ```
 
 #### DeepClone
+
 - Structured clone wrapper for RunState snapshots
 
 #### EventEmitter
+
 - Typed event emitter for gameplay events (node_traversed, evidence_collected, trap_triggered, trace_changed, objective_completed, run_ended)
 
 ### Serializers
 
 #### RunStateSerializer
+
 - `serialize(state): string` — checkpoint save
 - `deserialize(data): RunState` — checkpoint restore
 - Version-aware: rejects incompatible versions
 
 #### ReplayDeltaSerializer
+
 - `captureDelta(prevState, newState, action): ReplayDelta`
 - `serializeDeltas(deltas[]): ReplayPayload`
 
@@ -435,6 +460,7 @@ packages/schemas/src/
 All schemas carry `schemaVersion: z.number()` field.
 
 #### StageDefinition
+
 ```typescript
 const StageDefinitionSchema = z.object({
   schemaVersion: z.number(),
@@ -463,6 +489,7 @@ const StageDefinitionSchema = z.object({
 ```
 
 #### NodeDefinition
+
 ```typescript
 const NodeDefinitionSchema = z.object({
   id: z.string(),
@@ -472,15 +499,18 @@ const NodeDefinitionSchema = z.object({
   accessRules: z.array(AccessRuleSchema),
   evidenceSlots: z.array(EvidenceSlotSchema),
   trapConfig: TrapConfigSchema.nullable(),
-  visualHints: z.object({
-    icon: z.string().optional(),
-    color: z.string().optional(),
-    hidden: z.boolean().optional(),
-  }).optional(),
+  visualHints: z
+    .object({
+      icon: z.string().optional(),
+      color: z.string().optional(),
+      hidden: z.boolean().optional(),
+    })
+    .optional(),
 });
 ```
 
 #### AccessRule
+
 ```typescript
 const AccessRuleSchema = z.object({
   type: z.enum(['evidence_required', 'trace_threshold', 'item_required', 'always', 'never']),
@@ -490,6 +520,7 @@ const AccessRuleSchema = z.object({
 ```
 
 #### EvidenceDefinition
+
 ```typescript
 const EvidenceDefinitionSchema = z.object({
   id: z.string(),
@@ -502,6 +533,7 @@ const EvidenceDefinitionSchema = z.object({
 ```
 
 #### TrapDefinition
+
 ```typescript
 const TrapDefinitionSchema = z.object({
   id: z.string(),
@@ -515,10 +547,17 @@ const TrapDefinitionSchema = z.object({
 ```
 
 #### ObjectiveDefinition
+
 ```typescript
 const ObjectiveDefinitionSchema = z.object({
   id: z.string(),
-  type: z.enum(['reach_node', 'collect_evidence', 'survive_time', 'avoid_detection', 'disarm_trap']),
+  type: z.enum([
+    'reach_node',
+    'collect_evidence',
+    'survive_time',
+    'avoid_detection',
+    'disarm_trap',
+  ]),
   targetRef: z.string(),
   completionCondition: CompletionConditionSchema,
   optional: z.boolean().default(false),
@@ -526,6 +565,7 @@ const ObjectiveDefinitionSchema = z.object({
 ```
 
 #### RewardTable
+
 ```typescript
 const RewardTableSchema = z.object({
   baseRewards: z.array(RewardEntrySchema),
@@ -548,6 +588,7 @@ const BonusRewardEntrySchema = z.object({
 ### API/DTO Schemas (Zod)
 
 #### Auth
+
 ```typescript
 const LoginRequestSchema = z.object({
   deviceId: z.string(),
@@ -565,6 +606,7 @@ const LoginResponseSchema = z.object({
 ```
 
 #### Run Submission
+
 ```typescript
 const RunSubmitRequestSchema = z.object({
   runId: z.string(),
@@ -617,24 +659,28 @@ const NodeTraversalEventSchema = TelemetryEventBase.extend({
 ### Validation Pipeline
 
 #### StageValidator
+
 - Schema compliance (parse with Zod)
 - Structural integrity: all node references in links exist, all evidence node refs exist, all trap node refs exist
 - Entry/exit nodes exist
 - No orphan nodes (unreachable from entry)
 
 #### SolvabilityChecker
+
 - BFS/DFS from entry to exit (ignoring access rules)
 - BFS/DFS from entry to all objective target nodes
 - All required evidence discoverable
 - All required objectives achievable
 
 #### FairnessChecker
+
 - Stage winnable without premium items
 - Every trap has counterplay or avoidance path
 - Evidence discovery conditions satisfiable
 - No unavoidable critical trace escalation
 
 #### DifficultyScorer
+
 - Graph complexity (nodes, links, branching factor)
 - Trap count and severity
 - Trace pressure (decay rate vs accumulation rate)
@@ -714,13 +760,14 @@ apps/mobile/src/
 ### Design Tokens
 
 #### Colors (Tailwind)
+
 ```typescript
 const colors = {
   // Gameplay states
   trace: {
-    low: '#22c55e',      // green-500
-    mid: '#eab308',      // yellow-500
-    high: '#f97316',     // orange-500
+    low: '#22c55e', // green-500
+    mid: '#eab308', // yellow-500
+    high: '#f97316', // orange-500
     critical: '#ef4444', // red-500
   },
   alert: {
@@ -756,9 +803,11 @@ const colors = {
 ```
 
 #### Spacing Scale
+
 4px base: 1=4px, 2=8px, 3=12px, 4=16px, 5=20px, 6=24px, 8=32px, 10=40px, 12=48px, 16=64px
 
 #### Typography Scale
+
 ```typescript
 const typography = {
   xs: { fontSize: '12px', lineHeight: '16px' },
@@ -818,12 +867,14 @@ interface PreferencesAdapter {
 ### Layout
 
 #### AppShell
+
 - Header bar (back button, title, action buttons)
 - Content area (scrollable, safe-area aware)
 - Bottom navigation bar (Home, Campaign, Inventory, Social, Settings)
 - Keyboard avoidance
 
 #### GameLayout
+
 - HUD frame overlay (top: trace + alert; bottom: actions + objectives)
 - Content area for graph view
 - Modal overlay for mini-games, node details
@@ -831,6 +882,7 @@ interface PreferencesAdapter {
 ### Zustand Stores
 
 #### useAppStore
+
 ```typescript
 interface AppState {
   theme: 'dark' | 'light';
@@ -896,33 +948,39 @@ packages/game-core/src/content/
 ### Content Services
 
 #### ContentCatalogService
+
 - Fetch catalog from API (or cache)
 - List available stages with metadata (name, difficulty, stars, locked status)
 - TanStack Query integration: `useCatalog()`
 
 #### StagePackageLoader
+
 - Fetch full stage package by ID + version
 - Validate against schema before returning
 - TanStack Query integration: `useStagePackage(id)`
 
 #### ContentCache (IndexedDB)
+
 - Cache catalog and stage packages
 - LRU eviction when storage full
 - Version-aware: stale cache entries marked for refresh
 - Offline browse support
 
 #### ContentValidator (runtime)
+
 - Validate stage package against Zod schemas before run starts
 - Reject invalid content with clear error messages
 - Check contentVersion compatibility with engine
 
 #### ContentVersionPin
+
 - Pin content to specific version for entire run duration
 - Prevent mid-run content changes
 
 ### Sample Stages
 
 #### Tutorial Stage
+
 - Linear graph: Entry → A → B → C → Exit
 - 1 evidence to collect (required)
 - 0 traps
@@ -930,12 +988,14 @@ packages/game-core/src/content/
 - Objective: reach exit
 
 #### Easy Stage
+
 - Branching graph: Entry → {A, B} → {C, D} → Exit
 - 2 evidence slots, 1 required for gate
 - 1 trap (low severity, has counterplay)
 - 2 objectives: collect evidence + reach exit
 
 #### Medium Stage
+
 - Looping graph: 8-10 nodes, multiple paths
 - 3 evidence slots, 2 required
 - 2 traps (medium severity)
@@ -982,17 +1042,20 @@ apps/mobile/src/screens/mission/
 ### Mission Orchestration
 
 #### MissionController
+
 - Coordinate run lifecycle: init → play → complete/fail → report
 - Wire simulation core to UI via hooks
 - Handle checkpoint on safe moments
 
 #### RunSessionManager
+
 - Create RunState from stage content + seed
 - Checkpoint save (after each action resolution)
 - Checkpoint restore (on app resume)
 - Abandon run (with confirmation)
 
 #### ActionDispatcher
+
 - UI intent → ActionIntent → ActionExecutor → new state → UI update
 - Queue actions if simulation busy
 - Debounce rapid inputs
@@ -1000,6 +1063,7 @@ apps/mobile/src/screens/mission/
 ### Gameplay UI
 
 #### GraphView
+
 - SVG-based node-link graph rendering
 - Nodes: circles with type-colored borders and icons
 - Links: lines/arrows with traversal state styling
@@ -1012,17 +1076,20 @@ apps/mobile/src/screens/mission/
 - Animated transitions for node traversal
 
 #### NodeDetailPanel
+
 - Slide-up panel when node selected
 - Shows: node name, type, access requirements, evidence available, trap warnings
 - Action buttons: Move Here (if adjacent and legal), Scan, Use Item
 - Locked node: show missing requirements
 
 #### ActionPanel
+
 - Bottom action bar with available actions
 - Actions: Move, Collect Evidence, Disarm Trap, Scan, Wait
 - Disabled state with reason tooltip for unavailable actions
 
 #### HUD
+
 - Top-left: Trace bar (fill + tier label)
 - Top-right: Alert tier indicator (icon + color)
 - Top-center: Turn counter
@@ -1031,18 +1098,21 @@ apps/mobile/src/screens/mission/
 - Center-top: Active objective reminder
 
 #### ObjectivePanel
+
 - Collapsible side panel
 - List of objectives with progress indicators
 - Required vs optional distinction
 - Completed objectives: checkmark + strikethrough
 
 #### EvidenceInventory
+
 - Quick-view bar of collected evidence icons
 - Tap to expand detail
 
 ### Run Flow Screens
 
 #### RunStartScreen
+
 - Stage name and description
 - Objectives preview
 - Difficulty indicator
@@ -1050,6 +1120,7 @@ apps/mobile/src/screens/mission/
 - Start button → creates RunState → transitions to MissionScreen
 
 #### RunCompleteScreen
+
 - Score breakdown (base + objectives + evidence + trace + time + traps + bonus)
 - Stars earned (1-3)
 - Rewards earned
@@ -1057,6 +1128,7 @@ apps/mobile/src/screens/mission/
 - Buttons: Next Stage, Retry, Back to Campaign
 
 #### RunFailScreen
+
 - Failure reason (detected, all objectives failed, etc.)
 - Score (partial)
 - Buttons: Retry, Back to Campaign
@@ -1064,6 +1136,7 @@ apps/mobile/src/screens/mission/
 ### Simulation ↔ UI Integration
 
 #### useRunState hook
+
 ```typescript
 function useRunState() {
   return {
@@ -1077,6 +1150,7 @@ function useRunState() {
 ```
 
 #### GameplayEvent → Visual Feedback Mapping
+
 - `node_traversed` → animate link traversal, move current node indicator
 - `evidence_collected` → evidence icon pop, add to inventory, haptic success
 - `trap_triggered` → screen shake, danger flash, haptic error
@@ -1212,19 +1286,23 @@ model ContentManifest {
 ### API Endpoints
 
 #### Auth
+
 - `POST /auth/login` — device login → JWT + refresh token
 - `POST /auth/refresh` — refresh token → new JWT pair
 - `POST /auth/logout` — revoke session
 
 #### Profile
+
 - `GET /profile` — current player profile
 - `PATCH /profile` — update display name, settings
 
 #### Progression
+
 - `GET /progression` — player's stage progression list
 - `GET /progression/:stageId` — specific stage progression
 
 #### Content
+
 - `GET /content/catalog` — available stages list with metadata
 - `GET /content/stage/:id` — stage package by ID (latest or specified version)
 - `GET /content/stage/:id/:version` — stage package by specific version
@@ -1245,6 +1323,7 @@ apps/mobile/src/network/
 ```
 
 #### ApiClient
+
 - Base HTTP client (fetch wrapper)
 - Auth header injection (Bearer token)
 - Token refresh interceptor (401 → refresh → retry)
@@ -1252,6 +1331,7 @@ apps/mobile/src/network/
 - Error normalization
 
 #### TanStack Query Hooks
+
 - `useAuth()` — login/logout state, mutation
 - `useProfile()` — profile fetch with stale-while-revalidate
 - `useCatalog()` — catalog fetch with cache
@@ -1273,24 +1353,28 @@ apps/mobile/src/network/
 ### Backend Modules
 
 #### InventoryModule
+
 - Grant items (server-authoritative, audited)
 - Consume items (idempotent)
 - Query inventory
 - Item types: keycard, tool, consumable, cosmetic
 
 #### ProgressionModule
+
 - Calculate XP from run results
 - Level up logic
 - Stage stars update (1-3 stars based on score thresholds)
 - Chapter completion tracking
 
 #### EconomyModule
+
 - Currency wallets: soft (earned) + hard (premium)
 - Transaction ledger (every grant/consume logged)
 - Balance queries
 - No double-spend guarantee
 
 #### RewardModule
+
 - Reward table evaluation
 - Claim settlement (idempotent, with receipt)
 - Post-run reward grant
@@ -1359,11 +1443,13 @@ apps/mobile/src/screens/
 ```
 
 #### InventoryScreen
+
 - Item grid with icons, quantities, rarity indicators
 - Item detail modal: name, description, quantity, use button
 - Filter by type
 
 #### ProfileScreen
+
 - Player avatar placeholder, display name
 - Level + XP progress bar
 - Stats: total missions, total score, evidence collected, traps disarmed
@@ -1426,12 +1512,14 @@ apps/api/src/modules/replay/
 ```
 
 #### Endpoints
+
 - `POST /replay/upload` — upload replay payload (signed)
 - `GET /replay/:runId` — get replay manifest
 - `GET /replay/:runId/blob` — get replay payload (signed URL)
 - `GET /replay/latest` — get player's latest replays
 
 #### Storage
+
 - Manifests in PostgreSQL
 - Replay blobs in S3-compatible storage
 - Signed URLs for blob access
@@ -1449,12 +1537,14 @@ apps/mobile/src/screens/
 ```
 
 #### ReplayRecorder
+
 - Hook into ActionExecutor
 - Capture each action + result events
 - Periodic full state snapshots (every 10 actions)
 - On run complete: serialize → upload
 
 #### ReplayViewer
+
 - Load replay payload
 - Step-by-step action replay
 - Timeline scrubber (drag to any turn)
@@ -1487,23 +1577,27 @@ apps/mobile/src/telemetry/
 ```
 
 #### TelemetryService
+
 - Emit events with schema validation
 - Auto-tag: app_version, content_version, platform, session_id, run_id
 - Integration hooks: call after each gameplay action, screen view, error
 
 #### EventBuffer (IndexedDB)
+
 - Queue events when offline
 - Flush when online returns
 - Max queue size: 1000 events
 - Oldest events dropped when full
 
 #### EventDispatcher
+
 - Batch events (50 per batch or 30 second interval)
 - Send to backend telemetry endpoint
 - Retry on failure (exponential backoff)
 - Drop on persistent failure (log locally)
 
 #### PrivacyFilter
+
 - Strip PII from event payloads
 - Account ID only if user consented
 - No device identifiers in gameplay events
@@ -1526,12 +1620,14 @@ apps/api/src/modules/telemetry/
 ### Analytics Integration
 
 #### PostHog (Client)
+
 - SDK integration in mobile app
 - Auto-capture: screen views, feature usage
 - Custom events from telemetry service
 - Funnel analysis: onboarding → first mission → retention
 
 #### Sentry (Client + Backend)
+
 - Client: crash reporting, error tracking, performance traces
 - Backend: exception tracking, API performance
 - Source maps for client builds
@@ -1611,12 +1707,14 @@ apps/mobile/src/liveops/
 ```
 
 #### LiveOpsService
+
 - Fetch config on startup
 - Cache in IndexedDB
 - Refresh on app foreground (if stale > 1 hour)
 - Fallback chain: server → cache → hardcoded defaults
 
 #### FeatureFlagService
+
 - Check flag before rendering gated features
 - Targeting rules: all users, percentage rollout, specific accounts
 
@@ -1718,18 +1816,21 @@ apps/mobile/src/screens/
 ```
 
 #### RankedScreen
+
 - Current season info and timer
 - Player's current rank and tier
 - Leaderboard preview (top 10 + player's position)
 - Start ranked challenge button
 
 #### RankedChallengeScreen
+
 - Same as mission flow but with ranked constraints
 - Seed locked by server
 - Timer displayed
 - Submission automatic on completion
 
 #### LeaderboardScreen
+
 - Full leaderboard with pagination
 - Filter: global, friends, clan
 - Tier indicators (bronze, silver, gold, platinum, diamond)
@@ -1823,18 +1924,21 @@ apps/mobile/src/screens/
 ```
 
 #### FriendsScreen
+
 - Friend list with online status
 - Pending requests (incoming + outgoing)
 - Search players
 - Add friend / accept / reject / remove
 
 #### ClanScreen
+
 - Clan info (name, tag, level, XP)
 - Member list with roles
 - Clan progression / milestones
 - Invite / leave / manage (owner)
 
 #### SocialProfileScreen
+
 - Other player's profile (limited view)
 - Stats summary
 - Shared replays
@@ -1875,12 +1979,14 @@ packages/game-core/src/minigames/
 ### Mini-Game Types
 
 #### Pattern Match (Evidence Decryption)
+
 - Display sequence of symbols
 - Player must repeat sequence in correct order
 - Difficulty: sequence length + time limit
 - Touch: tap symbols in order
 
 #### Lockpick (Trap Disarming)
+
 - Display lock with tumblers
 - Player adjusts tumblers to correct position
 - Feedback: tumbler color (close/far)
@@ -1888,6 +1994,7 @@ packages/game-core/src/minigames/
 - Touch: slide tumblers up/down
 
 #### Cipher Decode (Access Gate)
+
 - Display encoded message
 - Player substitutes letters to decode
 - Partial feedback: correctly decoded letters shown
@@ -1951,6 +2058,7 @@ packages/content-tools/
 ```
 
 ### StageBuilder API
+
 ```typescript
 const stage = new StageBuilder('my-stage', 'My Stage')
   .setDifficulty('medium')
@@ -1963,12 +2071,14 @@ const stage = new StageBuilder('my-stage', 'My Stage')
 ```
 
 ### CLI Commands
+
 - `content-tools validate <file>` — validate stage JSON
 - `content-tools solvability <file>` — check solvability
 - `content-tools difficulty <file>` — score difficulty
 - `content-tools export <file>` — export to content package
 
 ### Content Pipeline
+
 1. Author (programmatic or future web editor)
 2. Validate (schema + solvability + fairness)
 3. Package (bundle with metadata)
@@ -2044,12 +2154,14 @@ apps/mobile/src/services/
 ```
 
 #### StoreScreen
+
 - Featured items carousel
 - Categories: items, bundles, currency, cosmetics
 - Daily offers (time-limited)
 - Currency balance display
 
 #### PurchaseFlow
+
 1. Select offer → detail screen
 2. Tap buy → confirm dialog
 3. IAP flow stub (Google Play Billing / StoreKit)
@@ -2089,14 +2201,14 @@ apps/mobile/src/platform/
 
 ### Notification Types
 
-| Type | Trigger | Content |
-|------|---------|---------|
-| Event reminder | LiveOps event starts | "Season 2 is live! New challenges await." |
-| Friend request | Social action | "PlayerX wants to be your friend." |
-| Clan invite | Social action | "You've been invited to join ClanY." |
-| Ranked result | Ranked verification | "Your ranked run has been verified. Rank: #42." |
-| Daily reward | Time-based | "Your daily reward is ready to claim!" |
-| Custom | LiveOps config | Configurable per campaign |
+| Type           | Trigger              | Content                                         |
+| -------------- | -------------------- | ----------------------------------------------- |
+| Event reminder | LiveOps event starts | "Season 2 is live! New challenges await."       |
+| Friend request | Social action        | "PlayerX wants to be your friend."              |
+| Clan invite    | Social action        | "You've been invited to join ClanY."            |
+| Ranked result  | Ranked verification  | "Your ranked run has been verified. Rank: #42." |
+| Daily reward   | Time-based           | "Your daily reward is ready to claim!"          |
+| Custom         | LiveOps config       | Configurable per campaign                       |
 
 ### Deep Links
 
@@ -2221,18 +2333,21 @@ model AnomalyScore {
 ```
 
 #### PR Pipeline
+
 1. Lint (ESLint)
 2. Typecheck (tsc --noEmit)
 3. Unit tests (Vitest)
 4. Build (Vite for client, NestJS build for API)
 
 #### Main Pipeline
+
 1. All PR checks
 2. Integration tests
 3. Docker build + push
 4. Deploy to staging
 
 #### Release Pipeline
+
 1. Tag release
 2. All main checks
 3. Docker build + push (production tag)
@@ -2240,6 +2355,7 @@ model AnomalyScore {
 5. Smoke tests
 
 #### Mobile Pipeline
+
 1. Build client
 2. Fastlane: build → sign → upload to TestFlight/Play Console
 
@@ -2268,21 +2384,21 @@ CMD ["node", "dist/main.js"]
 services:
   api:
     build: ./apps/api
-    ports: ["3000:3000"]
+    ports: ['3000:3000']
     depends_on: [postgres, redis]
     environment:
       DATABASE_URL: postgresql://user:pass@postgres:5432/nullbyte
       REDIS_URL: redis://redis:6379
   postgres:
     image: postgres:16
-    ports: ["5432:5432"]
+    ports: ['5432:5432']
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: pass
       POSTGRES_DB: nullbyte
   redis:
     image: redis:7
-    ports: ["6379:6379"]
+    ports: ['6379:6379']
 ```
 
 ### Observability
@@ -2374,28 +2490,28 @@ services:
 
 ## Phase Summary
 
-| Phase | Focus | Dependencies | Est. Effort |
-|-------|-------|-------------|-------------|
-| 1 | Monorepo & tooling foundation | — | Small |
-| 2 | Game Core simulation engine | 1 | Large |
-| 3 | Shared schemas & content contracts | 1 | Medium |
-| 4 | Client app shell & platform layer | 1 | Medium |
-| 5 | Content system & stage loading | 2, 3, 4 | Medium |
-| 6 | Mission flow end-to-end | 2, 4, 5 | Large |
-| 7 | Backend: auth, profile, content API | 1, 3 | Medium |
-| 8 | Inventory, economy & progression | 6, 7 | Medium |
-| 9 | Replay system | 6, 7 | Medium |
-| 10 | Telemetry & analytics | 4, 7 | Medium |
-| 11 | LiveOps, feature flags & remote config | 7 | Medium |
-| 12 | Ranked & competitive | 6, 7, 8, 9 | Large |
-| 13 | Social systems | 7, 8 | Medium |
-| 14 | Mini-games | 2, 6 | Medium |
-| 15 | Creator pipeline | 3, 5 | Medium |
-| 16 | Commerce & store | 7, 8 | Medium |
-| 17 | Push notifications & deep links | 4, 7 | Small |
-| 18 | Advanced trust & moderation | 7, 9, 12 | Medium |
-| 19 | CI/CD, deployment & observability | 7 | Medium |
-| 20 | Polish, accessibility & performance | All | Large |
+| Phase | Focus                                  | Dependencies | Est. Effort |
+| ----- | -------------------------------------- | ------------ | ----------- |
+| 1     | Monorepo & tooling foundation          | —            | Small       |
+| 2     | Game Core simulation engine            | 1            | Large       |
+| 3     | Shared schemas & content contracts     | 1            | Medium      |
+| 4     | Client app shell & platform layer      | 1            | Medium      |
+| 5     | Content system & stage loading         | 2, 3, 4      | Medium      |
+| 6     | Mission flow end-to-end                | 2, 4, 5      | Large       |
+| 7     | Backend: auth, profile, content API    | 1, 3         | Medium      |
+| 8     | Inventory, economy & progression       | 6, 7         | Medium      |
+| 9     | Replay system                          | 6, 7         | Medium      |
+| 10    | Telemetry & analytics                  | 4, 7         | Medium      |
+| 11    | LiveOps, feature flags & remote config | 7            | Medium      |
+| 12    | Ranked & competitive                   | 6, 7, 8, 9   | Large       |
+| 13    | Social systems                         | 7, 8         | Medium      |
+| 14    | Mini-games                             | 2, 6         | Medium      |
+| 15    | Creator pipeline                       | 3, 5         | Medium      |
+| 16    | Commerce & store                       | 7, 8         | Medium      |
+| 17    | Push notifications & deep links        | 4, 7         | Small       |
+| 18    | Advanced trust & moderation            | 7, 9, 12     | Medium      |
+| 19    | CI/CD, deployment & observability      | 7            | Medium      |
+| 20    | Polish, accessibility & performance    | All          | Large       |
 
 ---
 
