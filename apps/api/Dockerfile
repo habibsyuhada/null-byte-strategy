@@ -14,7 +14,9 @@ WORKDIR /app
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/apps/api/dist ./dist
 COPY --from=builder /app/apps/api/package.json ./
+COPY --from=builder /app/packages/schemas/package.json ./packages/schemas/package.json
 COPY --from=builder /app/packages/schemas/dist ./packages/schemas/dist
+COPY --from=builder /app/packages/utils/package.json ./packages/utils/package.json
 COPY --from=builder /app/packages/utils/dist ./packages/utils/dist
 EXPOSE 3000
 CMD ["node", "dist/index.js"]
